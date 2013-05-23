@@ -5,7 +5,21 @@ import com.github.eventsource.client.EventSourceException;
 import com.github.eventsource.client.EventSourceHandler;
 import com.github.eventsource.client.impl.ConnectionHandler;
 import com.github.eventsource.client.impl.EventStreamParser;
-import org.jboss.netty.channel.*;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelEvent;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -15,14 +29,6 @@ import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.Timeout;
 import org.jboss.netty.util.Timer;
 import org.jboss.netty.util.TimerTask;
-
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class EventSourceChannelHandler extends SimpleChannelUpstreamHandler implements ConnectionHandler {
     private static final Pattern STATUS_PATTERN = Pattern.compile("HTTP/1.1 (\\d+) (.*)");
@@ -41,7 +47,7 @@ public class EventSourceChannelHandler extends SimpleChannelUpstreamHandler impl
     private boolean eventStreamOk;
     private boolean headerDone;
     private Integer status;
-    private AtomicBoolean reconnecting = new AtomicBoolean(false);
+    private final AtomicBoolean reconnecting = new AtomicBoolean(false);
 
     public EventSourceChannelHandler(EventSourceHandler eventSourceHandler, long reconnectionTimeMillis, EventSourceClient client, URI uri) {
         this.eventSourceHandler = eventSourceHandler;
@@ -103,7 +109,7 @@ public class EventSourceChannelHandler extends SimpleChannelUpstreamHandler impl
             if (CONTENT_TYPE_PATTERN.matcher(line).matches()) {
                 eventStreamOk = true;
             }
-            if (line.isEmpty()) {
+            if (line.length() == 0) {
                 headerDone = true;
                 if (eventStreamOk) {
                     eventSourceHandler.onConnect();
@@ -127,6 +133,7 @@ public class EventSourceChannelHandler extends SimpleChannelUpstreamHandler impl
         ctx.getChannel().close();
     }
 
+    @Override
     public void setReconnectionTimeMillis(long reconnectionTimeMillis) {
         this.reconnectionTimeMillis = reconnectionTimeMillis;
     }

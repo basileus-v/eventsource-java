@@ -2,8 +2,6 @@ package com.github.eventsource.client.impl;
 
 import com.github.eventsource.client.EventSourceHandler;
 import com.github.eventsource.client.MessageEvent;
-
-import java.io.StringReader;
 import java.util.regex.Pattern;
 
 /**
@@ -36,7 +34,7 @@ public class EventStreamParser {
 
     public void line(String line) {
         int colonIndex;
-        if (line.trim().isEmpty()) {
+        if (line.trim().length() == 0) {
             dispatchEvent();
         } else if (line.startsWith(":")) {
             // ignore
