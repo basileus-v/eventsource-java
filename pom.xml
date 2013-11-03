@@ -4,7 +4,7 @@
     <artifactId>eventsource-client</artifactId>
     <name>Java EventSource Client</name>
     <description>A Java EventSource Client</description>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -36,8 +36,7 @@
         <dependency>
             <groupId>org.jboss.netty</groupId>
             <artifactId>netty</artifactId>
-            <version>3.2.4.Final</version>
-            <scope>compile</scope>
+            <version>3.2.9.Final</version>
         </dependency>
         <dependency>
             <groupId>org.webbitserver</groupId>

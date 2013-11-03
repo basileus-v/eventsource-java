@@ -3,7 +3,6 @@ package com.github.eventsource.client.stubs;
 import com.github.eventsource.client.EventSourceHandler;
 import com.github.eventsource.client.MessageEvent;
 import com.github.eventsource.client.impl.ConnectionHandler;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +13,8 @@ public class StubHandler implements ConnectionHandler, EventSourceHandler {
     private Long reconnectionTimeMillis;
     private String lastEventId;
     private boolean connected;
-    private Map<String, List<MessageEvent>> messagesByEvent = new HashMap<String, List<MessageEvent>>();
-    private List<Throwable> errors = new ArrayList<Throwable>();
+    private final Map<String, List<MessageEvent>> messagesByEvent = new HashMap<String, List<MessageEvent>>();
+    private final List<Throwable> errors = new ArrayList<Throwable>();
 
     @Override
     public void setReconnectionTimeMillis(long reconnectionTimeMillis) {
@@ -36,7 +35,7 @@ public class StubHandler implements ConnectionHandler, EventSourceHandler {
     public void onMessage(String event, MessageEvent message) throws Exception {
         getMessageEvents(event).add(message);
     }
-
+    
     @Override
     public void onError(Throwable t) {
         errors.add(t);

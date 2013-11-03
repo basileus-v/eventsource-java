@@ -2,7 +2,6 @@ package com.github.eventsource.client.impl;
 
 import com.github.eventsource.client.EventSourceHandler;
 import com.github.eventsource.client.MessageEvent;
-
 import java.util.concurrent.Executor;
 
 public class AsyncEventSourceHandler implements EventSourceHandler {
@@ -41,7 +40,7 @@ public class AsyncEventSourceHandler implements EventSourceHandler {
             }
         });
     }
-
+    
     @Override
     public void onError(final Throwable error) {
         executor.execute(new Runnable() {
